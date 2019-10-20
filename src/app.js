@@ -8,6 +8,11 @@ const { NODE_ENV } = require('./config')
 
 const app = express()
 
+//all my routers
+const promosRouter = require('./promos/promos-router')
+const clientsRouter = require('./clients/clients-router')
+
+
 const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
 
 app.use(morgan(morganOption))
@@ -17,6 +22,11 @@ app.use(helmet())
 app.get('/',(req,res)=>{
     res.send("Hello, world!")
 })
+
+app.use('/api/promos',promosRouter)
+app.use('/api/clients',clientsRouter)
+
+
 
 function errorHandler(error, req,res,next){
     let response

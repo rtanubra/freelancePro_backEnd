@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS flp_clients;
+DROP TABLE IF EXISTS flp_user;

@@ -8,11 +8,12 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "deploy": "git push heroku master",
-    "predeploy": "npm audit"
+    "predeploy": "npm audit",
+    "migrate": "postgrator --config postgrator-config.js"
   },
   "keywords": [],
-  "engines":{
-    "node":"10.11.0"
+  "engines": {
+    "node": "10.11.0"
   },
   "author": "Rey Tanubrata",
   "license": "ISC",
@@ -22,6 +23,7 @@
     "express": "^4.17.0",
     "helmet": "^3.21.1",
     "morgan": "^1.9.1",
+    "pg": "^7.12.1",
     "winston": "^3.2.1",
     "xss": "^1.0.6"
   },
@@ -29,6 +31,7 @@
     "chai": "^4.2.0",
     "mocha": "^6.1.4",
     "nodemon": "^1.19.0",
+    "postgrator-cli": "^3.2.0",
     "supertest": "^4.0.2"
   }
 }

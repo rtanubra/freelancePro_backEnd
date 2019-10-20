@@ -11,6 +11,8 @@ const app = express()
 //all my routers
 const promosRouter = require('./promos/promos-router')
 const clientsRouter = require('./clients/clients-router')
+const serviceRouter = require('./services/services-router')
+const userRouter = require('./user/user-router')
 
 
 const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
@@ -25,6 +27,8 @@ app.get('/',(req,res)=>{
 
 app.use('/api/promos',promosRouter)
 app.use('/api/clients',clientsRouter)
+app.use('/api/services',serviceRouter)
+app.use('/api/user',userRouter)
 
 
 

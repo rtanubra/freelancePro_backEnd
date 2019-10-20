@@ -1,5 +1,5 @@
 {
-  "name": "expressBoilerplate",
+  "name": "FreeLancePro",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,13 +11,16 @@
     "predeploy": "npm audit"
   },
   "keywords": [],
-  "author": "",
+  "engines":{
+    "node":"10.11.0"
+  },
+  "author": "Rey Tanubrata",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "express": "^4.17.0",
-    "helmet": "^3.18.0",
+    "helmet": "^3.21.1",
     "morgan": "^1.9.1",
     "winston": "^3.2.1",
     "xss": "^1.0.6"

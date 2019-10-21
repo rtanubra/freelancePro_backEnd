@@ -12,7 +12,7 @@ CREATE TABLE flp_services (
   cost FLOAT(8) NOT NULL,
   people INTEGER NOT NULL,
   promo_id INTEGER REFERENCES flp_promos(id),
-  client_id INTEGER REFERENCES flp_clients(id)
+  client_id INTEGER REFERENCES flp_clients(id) ON DELETE CASCADE NOT NULL
 );
 
 ALTER TABLE flp_clients 

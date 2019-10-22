@@ -93,7 +93,7 @@ clientsRouter
                     res.client = client
                     return next()
                 }
-            }).catch(next)
+            })
         })
         .get((req,res,next)=>{
             return res.status(200).json(res.client)

@@ -11,10 +11,10 @@ CREATE TABLE flp_services (
   notes TEXT NOT NULL,
   cost FLOAT(8) NOT NULL,
   people INTEGER NOT NULL,
-  promo_id INTEGER REFERENCES flp_promos(id),
+  promo_id INTEGER REFERENCES flp_promos(id) ON DELETE CASCADE,
   client_id INTEGER REFERENCES flp_clients(id) ON DELETE CASCADE NOT NULL
 );
 
 ALTER TABLE flp_clients 
-  ADD open_promo INTEGER REFERENCES flp_promos(id);
+  ADD open_promo INTEGER REFERENCES flp_promos(id) ON DELETE CASCADE;
 

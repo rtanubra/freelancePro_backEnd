@@ -19,7 +19,8 @@ clientsRouter
     })
     .post(jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
-        const {name, email, phone, user_id,open_promo} = req.body
+        let {name, email, phone, user_id,open_promo} = req.body
+        email = email.toLowerCase()
         
         if (!name){
             return res.status(400).json({error:"Name is required"})

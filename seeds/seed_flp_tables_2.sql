@@ -20,9 +20,9 @@ VALUES
 
 INSERT INTO flp_clients (name, email,phone,user_id,open_promo)
 VALUES
-  ('Mundy Moon','MundyMoon@gmail.com','555-334-1234',1,1),
-  ('Mutiara Dewi','MutiaraDewi@gmail.com','555-123-1234',1,2),
-  ('Symbolic Cindy','SymbolicCindy@gmail.com','123-123-5555',1,3);
+  ('Mundy Moon','mundymoon@gmail.com','555-334-1234',1,1),
+  ('Madara Dewi','madaradewi@gmail.com','555-123-1234',1,2),
+  ('Symbolic Cindy','symboliccindy@gmail.com','123-123-5555',1,3);
 
 INSERT INTO flp_services (notes,cost,people, promo_id,client_id)
 VALUES

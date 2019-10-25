@@ -260,6 +260,17 @@ describe('clients', ()=>{
                     .send({phone:newPhone})
                     .expect(200)
                     .expect(updateCLient)
+            })
+            it(`Returns 200 when changing name correctly`,()=>{
+                const clientId = 1 
+                const newName = "my New Name"
+                const updateCLient = {...fixture.clients_answer[clientId-1]}
+                updateCLient.name = newName
+                return supertest(app)
+                    .patch(`/api/clients/${clientId}`)
+                    .send({name:newName})
+                    .expect(200)
+                    .expect(updateCLient)
             })  
         })
     })

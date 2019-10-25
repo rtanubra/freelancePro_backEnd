@@ -66,17 +66,23 @@ describe('clients', ()=>{
         afterEach('clean data',()=>{
             return db.raw('truncate flp_services, flp_clients restart identity cascade')
         })
-        context(`Given sufficient information`,()=>{
+        context(`POST - Given sufficient information`,()=>{
             it('Returns 200 when posting GOOD new client and data persists',()=>{
                 const client = fixture.clients[0]
                 return supertest(app)
                     .post('/api/clients/')
                     .send(client)
                     .expect(200)
-                    .expect(fixture.clients_answer[0])
+                    .expect(fixture.clients_answer[0]).then(res=>{
+                        //inspect data persists
+                        return supertest(app)
+                            .get(`/api/clients/${1}/`)
+                            .expect(200)
+                            .expect(fixture.clients_answer[0])
+                    })
             })
         })
-        context.only(`Given insufficient information`,()=>{
+        context(`POST - Given insufficient information`,()=>{
             it(`Returns 400 when name is missing`,()=>{
                 const client = {...fixture.clients[0]}
                 client.name = ""
@@ -96,9 +102,166 @@ describe('clients', ()=>{
                     .expect(400)
                     .expect({error:"Email is required"})
             })
-
+            
+            it(`Returns 400 when phone is missing`,()=>{
+                const client = {...fixture.clients[0]}
+                client.phone = ""
+                return supertest(app)
+                    .post(`/api/clients/`)
+                    .send(client)
+                    .expect(400)
+                    .expect({error:`Phone is required`})
+            })
+        })
+        context(`POST - Given duplicate email or phone`,()=>{
+            beforeEach('place data',()=>{
+                return db.into('flp_clients').insert(fixture.clients)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services, flp_clients restart identity cascade')
+            })
+            it(`returns 400 with duplicate email message`,()=>{
+                const client = {...fixture.clients[0]}  
+                client.phone="111-222-1122" // changing the phone number so that it is no longer a duplicate
+                return supertest(app)
+                    .post(`/api/clients`)
+                    .send(client)
+                    .expect(400)
+                    .expect({error:`A client with email - ${client.email} - already exists`})
+            })
+            it(`returns 400 with dupliate phone message`,()=>{
+                const client = {...fixture.clients[1]}
+                client.email="goodEmail@gmail.com"
+                return supertest(app)
+                    .post(`/api/clients`)
+                    .send(client)
+                    .expect(400)
+                    .expect({error:`A client with phone - ${client.phone} -  already exits`})
+            })
         })
           
+    })
+    describe(`GET /api/clients/:clientId/`,()=>{
+        before('clean data',()=>{
+            return db.raw('truncate flp_promos, flp_services, flp_clients,flp_user restart identity cascade')
+        })
+        before('setup user as foreign key',()=>{
+            return db.into('flp_user').insert(fixture.user)
+        })
+        before('setup promos as foreign key',()=>{
+            return db.into('flp_promos').insert(fixture.promos)
+        })
+        context(`Looking for existing data`,()=>{
+            beforeEach('place data',()=>{
+                return db.into('flp_clients').insert(fixture.clients)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services, flp_clients restart identity cascade')
+            })
+            it(`Return 200 with desired client`,()=>{
+                const clientId = 1
+                return supertest(app)
+                    .get(`/api/clients/${clientId}`)
+                    .expect(200)
+                    .expect(fixture.clients_answer[clientId-1])
+            })
+        })
+        context(`Looking for non existing data`,()=>{
+            it(`Returns 400 with an error message stating it doesnt exist`,()=>{
+                const clientId = 50
+                return supertest(app)
+                    .get(`/api/clients/${clientId}`)
+                    .expect(404)
+                    .expect({error:`Client with Id ${clientId} does not exist.`})
+            })
+        })
+    })
+    describe(`DELETE /api/clients/:clientId/`,()=>{
+        before('clean data',()=>{
+            return db.raw('truncate flp_promos, flp_services, flp_clients,flp_user restart identity cascade')
+        })
+        before('setup user as foreign key',()=>{
+            return db.into('flp_user').insert(fixture.user)
+        })
+        before('setup promos as foreign key',()=>{
+            return db.into('flp_promos').insert(fixture.promos)
+        })
+        context(`Looking to delete data that does exist`,()=>{
+            beforeEach('place data',()=>{
+                return db.into('flp_clients').insert(fixture.clients)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services, flp_clients restart identity cascade')
+            })
+            it(`returns 204 and successfully deletes data`,()=>{
+                const clientId = 1
+                return supertest(app)
+                    .delete(`/api/clients/${clientId}`)
+                    .expect(204).then(res=>{
+                        return supertest(app)
+                            .get(`/api/clients/${clientId}`)
+                            .expect(404)
+                    })
+                    
+            })
+
+        })
+        context(`Looking to delete data that does not exist`,()=>{
+            beforeEach('place data',()=>{
+                return db.into('flp_clients').insert(fixture.clients)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services, flp_clients restart identity cascade')
+            })
+            it(`It returns 404 resource not found`,()=>{
+                const clientId = 60005
+                return supertest(app)
+                    .delete(`/api/clients/${clientId}`)
+                    .expect(404)
+            })
+        })
+    })
+
+    describe(`PATCH /api/clients/:clientId`,()=>{
+        before('clean data',()=>{
+            return db.raw('truncate flp_promos, flp_services, flp_clients,flp_user restart identity cascade')
+        })
+        before('setup user as foreign key',()=>{
+            return db.into('flp_user').insert(fixture.user)
+        })
+        before('setup promos as foreign key',()=>{
+            return db.into('flp_promos').insert(fixture.promos)
+        })
+        context.only(`Successful patch! lets Patch`,()=>{
+            beforeEach('place data',()=>{
+                return db.into('flp_clients').insert(fixture.clients)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services, flp_clients restart identity cascade')
+            })
+            it(`Returns 200 when changing email correctly`,()=>{
+            const clientId = 1 
+            const newEmail = "somenewemail@hotmail.com"
+            const updateCLient = {...fixture.clients_answer[clientId-1]}
+            updateCLient.email = newEmail
+            return supertest(app)
+                .patch(`/api/clients/${clientId}`)
+                .send({email:newEmail})
+                .expect(200)
+                .expect(updateCLient)
+            }) 
+            it(`Returns 200 when changing phone numbers correctly`,()=>{
+                const clientId = 1 
+                const newPhone = "123-456-7890"
+                const updateCLient = {...fixture.clients_answer[clientId-1]}
+                updateCLient.phone = newPhone
+                return supertest(app)
+                    .patch(`/api/clients/${clientId}`)
+                    .send({phone:newPhone})
+                    .expect(200)
+                    .expect(updateCLient)
+            })  
+        })
     })
     after('disconnect from db',()=>{
         return db.destroy()

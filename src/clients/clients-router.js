@@ -74,7 +74,7 @@ clientsRouter
             }
 
             return ClientsService.postClient(db,client).then(client=>{
-                return res.status(400).json(client[0])
+                return res.status(200).json(client[0])
             })
         })
 

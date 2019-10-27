@@ -232,7 +232,7 @@ describe('clients', ()=>{
         before('setup promos as foreign key',()=>{
             return db.into('flp_promos').insert(fixture.promos)
         })
-        context.only(`Successful patch! lets Patch`,()=>{
+        context(`Successful patch! lets Patch`,()=>{
             beforeEach('place data',()=>{
                 return db.into('flp_clients').insert(fixture.clients)
             })
@@ -272,6 +272,54 @@ describe('clients', ()=>{
                     .expect(200)
                     .expect(updateCLient)
             })  
+        })
+        context(`Unsuccesful patch (duplicate/incorrect email/phone)`,()=>{
+            beforeEach('place data',()=>{
+                return db.into('flp_clients').insert(fixture.clients)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services, flp_clients restart identity cascade')
+            })
+            it(`Returns 400 when client is updated with incorrect email format`,()=>{
+                const clientId = 1
+                const newEmail = "my new email"
+                const updateCLient = {...fixture.clients_answer[clientId-1]}
+                updateCLient.email = newEmail
+                return supertest(app)
+                    .patch(`/api/clients/${clientId}`)
+                    .send({email:newEmail})
+                    .expect(400)
+                    .expect({error:`Client email - Please input a valid email address -such as- myEmail@gmail.com`})
+            })
+            it(`Returns 400 when client is updated with incorrect phone format`,()=>{
+                const clientId= 1
+                const newPhone  = "some New Phone"
+                return supertest(app)
+                    .patch(`/api/clients/${clientId}`)
+                    .send({phone:newPhone})
+                    .expect(400)
+                    .expect({error:"Client phone - input in ###-###-#### "})
+            })
+            it(`Returns 400 when client is updated with existing phone number`,()=>{
+                const clientId= 1
+                const newPhone = fixture.clients[clientId].phone
+                return supertest(app)
+                    .patch(`/api/clients/${clientId}`)
+                    .send({phone:newPhone})
+                    .expect(400)
+                    .expect({error:`A client with phone - ${newPhone} - already exists`})
+            })
+            it(`Returns 400 when client is updated with existing email `,()=>{
+                const clientId= 1
+                const newEmail = fixture.clients[clientId].email
+                return supertest(app)
+                    .patch(`/api/clients/${clientId}`)
+                    .send({email:newEmail})
+                    .expect(400)
+                    .expect({error:`A client with email - ${newEmail} - already exists`})
+            })
+            
+
         })
     })
     after('disconnect from db',()=>{

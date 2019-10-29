@@ -13,6 +13,7 @@ const promosRouter = require('./promos/promos-router')
 const clientsRouter = require('./clients/clients-router')
 const serviceRouter = require('./services/services-router')
 const userRouter = require('./user/user-router')
+const authRouter = require('./auth/auth-router')
 
 
 const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
@@ -25,6 +26,7 @@ app.get('/',(req,res)=>{
     res.send("Hello, world!")
 })
 
+app.use(`/api/login`,authRouter)
 app.use('/api/promos',promosRouter)
 app.use('/api/clients',clientsRouter)
 app.use('/api/services',serviceRouter)

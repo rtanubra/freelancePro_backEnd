@@ -46,7 +46,7 @@ promosRouter
         console.log(id)
         return PromosService.getById(db,id).then(promo=>{
             if (!promo){
-                return res.status(404).json({error:`Could not locate service with id - ${id}`})
+                return res.status(404).json({error:`Could not locate promo with id - ${id}`})
             } else {
                 res.promo = promo
                 return next()
@@ -70,12 +70,14 @@ promosRouter
 
         return PromosService.getAllPromos(db).then(promos=>{
             //if name is changed validate that it doesnt already exist
-            if (name !== res.promo.name){
-                const duplicateCheck = promos.find(promo=>{
-                    return promo.name.toLowerCase() === name.toLowerCase()
-                })
-                if (duplicateCheck){
-                    return res.status(400).json({error:`A promo with name ${name} already exists`})
+            if (name){
+                if (name !== res.promo.name){
+                    const duplicateCheck = promos.find(promo=>{
+                        return promo.name.toLowerCase() === name.toLowerCase()
+                    })
+                    if (duplicateCheck){
+                        return res.status(400).json({error:`A promo with name ${name} already exists`})
+                    }
                 }
             }
             return PromosService.updatePromo(db,id,updatePromo).then(promo=>{

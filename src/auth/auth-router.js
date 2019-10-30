@@ -25,7 +25,10 @@ authRouter
                 return res.status(400).json({error:`Email and password combination incorrect`})
             }
             if (AuthService.comparePasswords(password_decrypt,user.password)){
-                return res.status(200).json({message:"successfully logged in"})
+                    const subject = user.email
+                    const payload = {user_id:user.id}
+                    const JsonWebToken=AuthService.createJwt(subject, payload)
+                    return res.status(200).json({authToken:JsonWebToken,payload:payload})
             } else {
                 return res.status(400).json({error:`Email and password combination incorrect`})
             }

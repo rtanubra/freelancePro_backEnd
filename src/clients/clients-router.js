@@ -9,6 +9,9 @@ const ValidateHelper = require('../helpers/validation')
 
 const UserService = require('../user/user-service')
 
+//protected endpoints 
+const {requireAuth} = require(`../middleware/jwt-auth`)
+
 clientsRouter
     .route('/')
     .get((req,res,next)=>{
@@ -17,11 +20,10 @@ clientsRouter
             return res.status(200).json(clients)
         })
     })
-    .post(jsonBodyParser,(req,res,next)=>{
+    .post(requireAuth,jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
         let {name, email, phone, user_id,open_promo} = req.body
         email = email.toLowerCase()
-        
         if (!name){
             return res.status(400).json({error:"Name is required"})
         }

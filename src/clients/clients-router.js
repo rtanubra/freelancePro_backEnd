@@ -14,6 +14,7 @@ const {requireAuth} = require(`../middleware/jwt-auth`)
 
 clientsRouter
     .route('/')
+
     .get((req,res,next)=>{
         const db = req.app.get('db')
         return ClientsService.getAllClients(db).then(clients=>{

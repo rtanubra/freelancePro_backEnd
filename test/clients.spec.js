@@ -2,6 +2,8 @@ const app = require('../src/app')
 const knex = require('knex')
 require('dotenv').config()
 const fixture = require('../fixtures/fixtures')
+const {makeAuthHeader} = require(`../fixtures/helper`)
+
 
 describe('clients', ()=>{
     let db 
@@ -17,12 +19,31 @@ describe('clients', ()=>{
         return db.raw('truncate flp_promos, flp_services, flp_clients restart identity cascade')
     })
     
-
+    describe(`Test protection of client /api/clients/`,()=>{
+        context(`Needs a bearer token`,()=>{
+            it(`Should return 401 missing bearer token when non provided`,()=>{
+                return supertest(app)
+                    .get(`/api/clients/`)
+                    .expect(401)
+                    .expect({error:`Missing bearer token`})
+            })
+        })
+        context(`Needs valid token`,()=>{
+            it(`Should return 401 Unauthorized login when wrong`,()=>{
+                return supertest(app)
+                    .get(`/api/clients/`)
+                    .set(`Authorization`,`bearer somecrazybearwashere`)
+                    .expect(401)
+                    .expect({error:`Unauthorized request`})
+            })
+        })
+    })
     describe('GET /api/clients/',()=>{
         context('No Starting data',()=>{
             it('returns 200 with no clients',()=>{
                 return supertest(app)
                     .get('/api/clients/')
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(200,[])
             })
         })
@@ -45,6 +66,7 @@ describe('clients', ()=>{
             it('returns 200 with clients inserted' , ()=>{
                 return supertest(app)
                     .get('/api/clients/')
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(200)
                     .expect((res)=>{
                         expect(res.body).to.eql(fixture.clients_answer)
@@ -71,12 +93,14 @@ describe('clients', ()=>{
                 const client = fixture.clients[0]
                 return supertest(app)
                     .post('/api/clients/')
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(client)
                     .expect(200)
                     .expect(fixture.clients_answer[0]).then(res=>{
                         //inspect data persists
                         return supertest(app)
                             .get(`/api/clients/${1}/`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(200)
                             .expect(fixture.clients_answer[0])
                     })
@@ -88,6 +112,7 @@ describe('clients', ()=>{
                 client.name = ""
                 return supertest(app)
                     .post(`/api/clients/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(client)
                     .expect(400)
                     .expect({error:"Name is required"})
@@ -98,6 +123,7 @@ describe('clients', ()=>{
                 client.email= ""
                 return supertest(app)
                     .post(`/api/clients/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(client)
                     .expect(400)
                     .expect({error:"Email is required"})
@@ -108,6 +134,7 @@ describe('clients', ()=>{
                 client.phone = ""
                 return supertest(app)
                     .post(`/api/clients/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(client)
                     .expect(400)
                     .expect({error:`Phone is required`})
@@ -125,6 +152,7 @@ describe('clients', ()=>{
                 client.phone="111-222-1122" // changing the phone number so that it is no longer a duplicate
                 return supertest(app)
                     .post(`/api/clients`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(client)
                     .expect(400)
                     .expect({error:`A client with email - ${client.email} - already exists`})
@@ -134,6 +162,7 @@ describe('clients', ()=>{
                 client.email="goodEmail@gmail.com"
                 return supertest(app)
                     .post(`/api/clients`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(client)
                     .expect(400)
                     .expect({error:`A client with phone - ${client.phone} -  already exits`})
@@ -162,6 +191,7 @@ describe('clients', ()=>{
                 const clientId = 1
                 return supertest(app)
                     .get(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(200)
                     .expect(fixture.clients_answer[clientId-1])
             })
@@ -171,6 +201,7 @@ describe('clients', ()=>{
                 const clientId = 50
                 return supertest(app)
                     .get(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(404)
                     .expect({error:`Client with Id ${clientId} does not exist.`})
             })
@@ -197,9 +228,11 @@ describe('clients', ()=>{
                 const clientId = 1
                 return supertest(app)
                     .delete(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(204).then(res=>{
                         return supertest(app)
                             .get(`/api/clients/${clientId}`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(404)
                     })
                     
@@ -217,6 +250,7 @@ describe('clients', ()=>{
                 const clientId = 60005
                 return supertest(app)
                     .delete(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(404)
             })
         })
@@ -246,6 +280,7 @@ describe('clients', ()=>{
             updateCLient.email = newEmail
             return supertest(app)
                 .patch(`/api/clients/${clientId}`)
+                .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                 .send({email:newEmail})
                 .expect(200)
                 .expect(updateCLient)
@@ -257,6 +292,7 @@ describe('clients', ()=>{
                 updateCLient.phone = newPhone
                 return supertest(app)
                     .patch(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({phone:newPhone})
                     .expect(200)
                     .expect(updateCLient)
@@ -268,6 +304,7 @@ describe('clients', ()=>{
                 updateCLient.name = newName
                 return supertest(app)
                     .patch(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({name:newName})
                     .expect(200)
                     .expect(updateCLient)
@@ -287,6 +324,7 @@ describe('clients', ()=>{
                 updateCLient.email = newEmail
                 return supertest(app)
                     .patch(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({email:newEmail})
                     .expect(400)
                     .expect({error:`Client email - Please input a valid email address -such as- myEmail@gmail.com`})
@@ -296,6 +334,7 @@ describe('clients', ()=>{
                 const newPhone  = "some New Phone"
                 return supertest(app)
                     .patch(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({phone:newPhone})
                     .expect(400)
                     .expect({error:"Client phone - input in ###-###-#### "})
@@ -305,6 +344,7 @@ describe('clients', ()=>{
                 const newPhone = fixture.clients[clientId].phone
                 return supertest(app)
                     .patch(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({phone:newPhone})
                     .expect(400)
                     .expect({error:`A client with phone - ${newPhone} - already exists`})
@@ -314,6 +354,7 @@ describe('clients', ()=>{
                 const newEmail = fixture.clients[clientId].email
                 return supertest(app)
                     .patch(`/api/clients/${clientId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({email:newEmail})
                     .expect(400)
                     .expect({error:`A client with email - ${newEmail} - already exists`})

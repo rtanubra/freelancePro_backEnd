@@ -28,7 +28,10 @@ services_answer=[
     {client_id:1,cost:200,id:2,notes:"Moustache",people:1,promo_id:1},
     {client_id:2,cost:400,id:3,notes:"Hair",people:2,promo_id:2}
 ]
-
+userNoCreds = {
+    email:'rdtanubrata@fmail.com',
+    id:3
+}
 
 module.exports={
     clients,
@@ -37,5 +40,6 @@ module.exports={
     promos,
     services,
     services_answer,
-    promos_answer
+    promos_answer,
+    userNoCreds
 }

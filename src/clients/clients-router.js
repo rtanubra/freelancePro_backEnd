@@ -14,14 +14,14 @@ const {requireAuth} = require(`../middleware/jwt-auth`)
 
 clientsRouter
     .route('/')
-
+    .all(requireAuth)
     .get((req,res,next)=>{
         const db = req.app.get('db')
         return ClientsService.getAllClients(db).then(clients=>{
             return res.status(200).json(clients)
         })
     })
-    .post(requireAuth,jsonBodyParser,(req,res,next)=>{
+    .post(jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
         let {name, email, phone, user_id,open_promo} = req.body
         email = email.toLowerCase()
@@ -86,6 +86,7 @@ clientsRouter
 
     clientsRouter
         .route('/:clientId')
+        .all(requireAuth)
         .all(jsonBodyParser,(req,res,next)=>{
             const db= req.app.get('db')
             const id = req.params.clientId

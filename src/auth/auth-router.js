@@ -26,7 +26,7 @@ authRouter
             }
             if (AuthService.comparePasswords(password_decrypt,user.password)){
                     const subject = user.email
-                    const payload = {user_id:user.id}
+                    const payload = {user_id:user.id,email:user.email}
                     const JsonWebToken=AuthService.createJwt(subject, payload)
                     return res.status(200).json({authToken:JsonWebToken,payload:payload})
             } else {

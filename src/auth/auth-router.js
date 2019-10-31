@@ -36,4 +36,17 @@ authRouter
         
     })
 
+authRouter
+    .route(`/tokenCheck`)
+    .post(jsonBodyParser,(req,res,next)=>{
+        const value = AuthService.verifyJwt(req.body.token)
+        if (value){
+            //pass
+            return res.status(200).json({success:true})
+        }else {
+            //fail 
+            return res.status(400).json({error:'Could not authenticate token'})
+        }
+    })
+
 module.exports = authRouter

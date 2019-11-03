@@ -2,6 +2,7 @@ const app = require('../src/app')
 const knex = require('knex')
 require('dotenv').config()
 const fixture = require('../fixtures/fixtures')
+const {makeAuthHeader} = require(`../fixtures/helper`)
 
 describe(`Promos`,()=>{
     let db 
@@ -23,6 +24,21 @@ describe(`Promos`,()=>{
         beforeEach('setup user as foreign key',()=>{
             return db.into('flp_user').insert(fixture.user)
         })
+        context(`GET not good auth headers`,()=>{
+            it(`Returns 401 with missing bearer token when not provided`,()=>{
+                return supertest(app)
+                    .get(`/api/promos`)
+                    .expect(401)
+                    .expect({error:`Missing bearer token`})
+            })
+            it(`Returns 401 with unauthorized access when provided incorrect token`,()=>{
+                return supertest(app)
+                    .get(`/api/promos`)
+                    .set('Authorization',`bearer thisIsAVeryLargeBear` )
+                    .expect(401)
+                    .expect({error:`Unauthorized request`})
+            })
+        })
         context(`With data present`,()=>{
             beforeEach('add data',()=>{
                 return db.into('flp_promos').insert(fixture.promos)
@@ -33,6 +49,7 @@ describe(`Promos`,()=>{
             it(`Returns 200 with all promos`,()=>{
                 return supertest(app)
                     .get(`/api/promos`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(200)
                     .expect(fixture.promos_answer)
             })
@@ -45,6 +62,7 @@ describe(`Promos`,()=>{
             it(`Returns 200 with [] when no data present`,()=>{
                 return supertest(app)
                     .get(`/api/promos/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(200)
                     .expect([])
             })
@@ -58,6 +76,21 @@ describe(`Promos`,()=>{
         beforeEach('setup user as foreign key',()=>{
             return db.into('flp_user').insert(fixture.user)
         })
+        context(`POST not good auth headers`,()=>{
+            it(`Returns 401 with missing bearer token when not provided`,()=>{
+                return supertest(app)
+                    .post(`/api/promos`)
+                    .expect(401)
+                    .expect({error:`Missing bearer token`})
+            })
+            it(`Returns 401 with unauthorized access when provided incorrect token`,()=>{
+                return supertest(app)
+                    .post(`/api/promos`)
+                    .set('Authorization',`bearer thisIsAVeryLargeBear` )
+                    .expect(401)
+                    .expect({error:`Unauthorized request`})
+            })
+        })
         context(`Correctly adding data`,()=>{
             afterEach('clean data',()=>{
                 return db.raw('truncate flp_promos restart identity cascade')
@@ -65,6 +98,7 @@ describe(`Promos`,()=>{
             it(`Returns 200 with added data when provided correct info (data persists)`,()=>{
                 return supertest(app)
                     .post(`/api/promos/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(fixture.promos[0])
                     .expect(200)
                     .expect(fixture.promos_answer[0])
@@ -72,6 +106,7 @@ describe(`Promos`,()=>{
                         //after validating return, check data persists
                         return supertest(app)
                             .get(`/api/promos`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(200)
                             .expect([fixture.promos_answer[0]])
                     })
@@ -88,6 +123,7 @@ describe(`Promos`,()=>{
                     promoToAdd[required[i]] = null
                     return supertest(app)
                         .post(`/api/promos/`)
+                        .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                         .send(promoToAdd)
                         .expect(400)
                         .expect({error:`Missing required field - ${required[i]}`})
@@ -106,6 +142,27 @@ describe(`Promos`,()=>{
         beforeEach('setup user as foreign key',()=>{
             return db.into('flp_user').insert(fixture.user)
         })
+        context(`GET :id not good auth headers`,()=>{
+            beforeEach('add data',()=>{
+                return db.into('flp_promos').insert(fixture.promos)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_promos restart identity cascade')
+            })
+            it(`Returns 401 with missing bearer token when not provided`,()=>{
+                return supertest(app)
+                    .get(`/api/promos/1`)
+                    .expect(401)
+                    .expect({error:`Missing bearer token`})
+            })
+            it(`Returns 401 with unauthorized access when provided incorrect token`,()=>{
+                return supertest(app)
+                    .get(`/api/promos/1`)
+                    .set('Authorization',`bearer thisIsAVeryLargeBear` )
+                    .expect(401)
+                    .expect({error:`Unauthorized request`})
+            })
+        })
         context(`Get a promo that exists`,()=>{
             beforeEach('add data',()=>{
                 return db.into('flp_promos').insert(fixture.promos)
@@ -117,6 +174,7 @@ describe(`Promos`,()=>{
                 const promoId = 1
                 return supertest(app)
                     .get(`/api/promos/${promoId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(200)
                     .expect(fixture.promos_answer[promoId-1])
             })
@@ -129,6 +187,7 @@ describe(`Promos`,()=>{
                 const promoId = 1
                 return supertest(app)
                     .get(`/api/promos/${promoId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(404)
                     .expect({error:`Could not locate promo with id - ${promoId}`})
             })
@@ -143,6 +202,27 @@ describe(`Promos`,()=>{
         beforeEach('setup user as foreign key',()=>{
             return db.into('flp_user').insert(fixture.user)
         })
+        context(`DELETE :id not good auth headers`,()=>{
+            beforeEach('add data',()=>{
+                return db.into('flp_promos').insert(fixture.promos)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_promos restart identity cascade')
+            })
+            it(`Returns 401 with missing bearer token when not provided`,()=>{
+                return supertest(app)
+                    .delete(`/api/promos/1`)
+                    .expect(401)
+                    .expect({error:`Missing bearer token`})
+            })
+            it(`Returns 401 with unauthorized access when provided incorrect token`,()=>{
+                return supertest(app)
+                    .delete(`/api/promos/1`)
+                    .set('Authorization',`bearer thisIsAVeryLargeBear` )
+                    .expect(401)
+                    .expect({error:`Unauthorized request`})
+            })
+        })
         context(`When looking for existing promo`,()=>{
             beforeEach(`Add data`,()=>{
                 return db.into(`flp_promos`).insert(fixture.promos)
@@ -154,10 +234,12 @@ describe(`Promos`,()=>{
                 const promoId = 1
                 return supertest(app)
                     .delete(`/api/promos/${promoId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(204)
                     .then(res=>{
                         return supertest(app)
                             .get(`/api/promos/${promoId}`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(404)
                             .expect({error:`Could not locate promo with id - ${promoId}`})
                     })
@@ -175,6 +257,7 @@ describe(`Promos`,()=>{
                 const promoId = 500
                 return supertest(app)
                     .delete(`/api/promos/${promoId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(404).expect({error:`Could not locate promo with id - ${promoId}`})
             })
         })
@@ -187,11 +270,33 @@ describe(`Promos`,()=>{
         beforeEach('setup user as foreign key',()=>{
             return db.into('flp_user').insert(fixture.user)
         })
+        context(`PATCH :id not good auth headers`,()=>{
+            beforeEach('add data',()=>{
+                return db.into('flp_promos').insert(fixture.promos)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_promos restart identity cascade')
+            })
+            it(`Returns 401 with missing bearer token when not provided`,()=>{
+                return supertest(app)
+                    .patch(`/api/promos/1`)
+                    .expect(401)
+                    .expect({error:`Missing bearer token`})
+            })
+            it(`Returns 401 with unauthorized access when provided incorrect token`,()=>{
+                return supertest(app)
+                    .patch(`/api/promos/1`)
+                    .set('Authorization',`bearer thisIsAVeryLargeBear` )
+                    .expect(401)
+                    .expect({error:`Unauthorized request`})
+            })
+        })
         context(`Attempt to patch non existing data`,()=>{
             const badId = 30
             it(`Return 404 with no existing data`,()=>{
                 return supertest(app)
                     .patch(`/api/promos/${badId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(404).expect({error:`Could not locate promo with id - ${badId}`})
             })
         })
@@ -210,6 +315,7 @@ describe(`Promos`,()=>{
                 newPromo.name = updatedFeature
                 return supertest(app)
                     .patch(`/api/promos/${promoId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({name:updatedFeature})
                     .expect(200)
                     .expect(newPromo)
@@ -217,6 +323,7 @@ describe(`Promos`,()=>{
                         //expect changes to persist
                         return supertest(app)
                             .get(`/api/promos/${promoId}`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(200)
                             .expect(newPromo)
                     })
@@ -228,6 +335,7 @@ describe(`Promos`,()=>{
                 newPromo.description = updatedFeature
                 return supertest(app)
                     .patch(`/api/promos/${promoId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({description:updatedFeature})
                     .expect(200)
                     .expect(newPromo)
@@ -235,6 +343,7 @@ describe(`Promos`,()=>{
                         //expect changes to persist
                         return supertest(app)
                             .get(`/api/promos/${promoId}`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(200)
                             .expect(newPromo)
                     })

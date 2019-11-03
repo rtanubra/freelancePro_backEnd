@@ -5,8 +5,11 @@ const promosRouter = express.Router()
 const jsonBodyParser = express.json()
 const xss = require('xss')
 
+const {requireAuth} = require(`../middleware/jwt-auth`)
+
 promosRouter
     .route('/')
+    .all(requireAuth)
     .get((req,res,next)=>{
         const db = req.app.get('db')
         PromosService.getAllPromos(db).then((promos)=>{
@@ -40,6 +43,7 @@ promosRouter
 
 promosRouter
     .route('/:promoId')
+    .all(requireAuth)
     .all(jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
         const id = req.params.promoId

@@ -338,6 +338,25 @@ describe('clients', ()=>{
                     .expect(401).expect({error:'Unauthorized request'})
             })
         })
+        context(`PATCH /:Id -without good authorization header`,()=>{
+            beforeEach('add data',()=>{
+                return db.into('flp_services').insert(fixture.services)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services restart identity cascade')
+            })
+            it(`Returns 401 Missing bearer token when auth not provided`,()=>{
+                return supertest(app)
+                    .patch('/api/services/1')
+                    .expect(401).expect({error:'Missing bearer token'})
+            })
+            it(`Returns 401 Unauthorized access when the wrong header is presented`,()=>{
+                return supertest(app)
+                    .patch(`/api/services/1`)
+                    .set('Authorization', 'bearer thisisWrong')
+                    .expect(401).expect({error:'Unauthorized request'})
+            })
+        })
         context(`Service does not exist`,()=>{
             it(`Returns 400 when service does not exist`,()=>{
                 const serviceId = 50

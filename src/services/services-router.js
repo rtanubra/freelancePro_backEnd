@@ -6,9 +6,11 @@ const serviceRouter = express.Router()
 const jsonBodyParser = express.json()
 const xss = require('xss')
 
+const {requireAuth} = require(`../middleware/jwt-auth`)
 
 serviceRouter
     .route('/')
+    .all(requireAuth)
     .get((req,res,next)=>{
         const db = req.app.get('db')
         return ServiceService.getAllServices(db).then(services=>{
@@ -51,6 +53,7 @@ serviceRouter
 
 serviceRouter
     .route('/:serviceId')
+    .all(requireAuth)
     .all(jsonBodyParser,(req,res,next)=>{
         const db= req.app.get('db')
         const id = req.params.serviceId

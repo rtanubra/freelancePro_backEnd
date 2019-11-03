@@ -2,6 +2,7 @@ const app = require('../src/app')
 const knex = require('knex')
 require('dotenv').config()
 const fixture = require('../fixtures/fixtures')
+const {makeAuthHeader} = require(`../fixtures/helper`)
 
 describe('clients', ()=>{
     let db 
@@ -29,6 +30,19 @@ describe('clients', ()=>{
         beforeEach('place clients needed as foreign key',()=>{
             return db.into('flp_clients').insert(fixture.clients)
         })
+        context(`GET -without good authorization header`,()=>{
+            it(`Returns 401 Missing bearer token when auth not provided`,()=>{
+                return supertest(app)
+                    .get('/api/services')
+                    .expect(401).expect({error:'Missing bearer token'})
+            })
+            it(`Returns 401 Unauthorized access when the wrong header is presented`,()=>{
+                return supertest(app)
+                    .get(`/api/services`)
+                    .set('Authorization', 'bearer thisisWrong')
+                    .expect(401).expect({error:'Unauthorized request'})
+            })
+        })
         context(`With data present`,()=>{
             beforeEach('add data',()=>{
                 return db.into('flp_services').insert(fixture.services)
@@ -39,6 +53,7 @@ describe('clients', ()=>{
             it(`Returns 200 and full list of services`,()=>{
                 return supertest(app)
                     .get(`/api/services/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(200)
                     .expect(fixture.services_answer)
             })
@@ -47,6 +62,7 @@ describe('clients', ()=>{
             it(`Return 200 with no data, because no data has been inputed`,()=>{
                 return supertest(app)
                     .get(`/api/services/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(200)
                     .expect([])
             })
@@ -67,6 +83,19 @@ describe('clients', ()=>{
         beforeEach('place clients needed as foreign key',()=>{
             return db.into('flp_clients').insert(fixture.clients)
         })
+        context(`POST -without good authorization header`,()=>{
+            it(`Returns 401 Missing bearer token when auth not provided`,()=>{
+                return supertest(app)
+                    .post('/api/services')
+                    .expect(401).expect({error:'Missing bearer token'})
+            })
+            it(`Returns 401 Unauthorized access when the wrong header is presented`,()=>{
+                return supertest(app)
+                    .post(`/api/services`)
+                    .set('Authorization', 'bearer thisisWrong')
+                    .expect(401).expect({error:'Unauthorized request'})
+            })
+        })
         context(`Good data is presented to post`,()=>{
             afterEach('clean data',()=>{
                 return db.raw('truncate flp_services restart identity cascade')
@@ -75,6 +104,7 @@ describe('clients', ()=>{
                 const newService = fixture.services[0]
                 return supertest(app)
                     .post(`/api/services`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(newService)
                     .expect(200)
                     .expect(fixture.services_answer[0])
@@ -82,6 +112,7 @@ describe('clients', ()=>{
                         //check data persists
                         return supertest(app)
                             .get(`/api/services/`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(200)
                             .expect([fixture.services_answer[0]])
                     })
@@ -97,6 +128,7 @@ describe('clients', ()=>{
                 newService.cost =null
                 return supertest(app)
                     .post(`/api/services/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(newService)
                     .expect(400)
                     .expect({error:`Missing required field - cost`})
@@ -106,6 +138,7 @@ describe('clients', ()=>{
                 newService.people =null
                 return supertest(app)
                     .post(`/api/services/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(newService)
                     .expect(400)
                     .expect({error:`Missing required field - people`})
@@ -116,6 +149,7 @@ describe('clients', ()=>{
                 newService.notes =null
                 return supertest(app)
                     .post(`/api/services/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(newService)
                     .expect(400)
                     .expect({error:`Missing required field - notes`})
@@ -126,6 +160,7 @@ describe('clients', ()=>{
                 newService.client_id=50
                 return supertest(app)
                     .post(`/api/services/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(newService)
                     .expect(400)
                     .expect({error:`No client with id ${newService.client_id}`})
@@ -136,6 +171,7 @@ describe('clients', ()=>{
                 newService.promo_id=50
                 return supertest(app)
                     .post(`/api/services/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send(newService)
                     .expect(400)
                     .expect({error:`Client does not have that open promo id - ${newService.promo_id}`})
@@ -159,6 +195,25 @@ describe('clients', ()=>{
         beforeEach('place clients needed as foreign key',()=>{
             return db.into('flp_clients').insert(fixture.clients)
         })
+        context(`GET /:Id -without good authorization header`,()=>{
+            beforeEach('add data',()=>{
+                return db.into('flp_services').insert(fixture.services)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services restart identity cascade')
+            })
+            it(`Returns 401 Missing bearer token when auth not provided`,()=>{
+                return supertest(app)
+                    .get('/api/services/1')
+                    .expect(401).expect({error:'Missing bearer token'})
+            })
+            it(`Returns 401 Unauthorized access when the wrong header is presented`,()=>{
+                return supertest(app)
+                    .get(`/api/services/1`)
+                    .set('Authorization', 'bearer thisisWrong')
+                    .expect(401).expect({error:'Unauthorized request'})
+            })
+        })
         context(`Look for existing data`,()=>{
             beforeEach('add data',()=>{
                 return db.into('flp_services').insert(fixture.services)
@@ -170,6 +225,7 @@ describe('clients', ()=>{
                 const serviceId = 1
                 return supertest(app)
                     .get(`/api/services/${serviceId}/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(200)
                     .expect(fixture.services_answer[serviceId-1])
             })
@@ -179,6 +235,7 @@ describe('clients', ()=>{
                 const serviceId = 300
                 return supertest(app)
                     .get(`/api/services/${serviceId}/`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(404)
                     .expect({error:`Could not locate service with id - ${serviceId}`})
             })
@@ -198,6 +255,25 @@ describe('clients', ()=>{
         beforeEach('place clients needed as foreign key',()=>{
             return db.into('flp_clients').insert(fixture.clients)
         })
+        context(`DELETE /:Id -without good authorization header`,()=>{
+            beforeEach('add data',()=>{
+                return db.into('flp_services').insert(fixture.services)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services restart identity cascade')
+            })
+            it(`Returns 401 Missing bearer token when auth not provided`,()=>{
+                return supertest(app)
+                    .delete('/api/services/1')
+                    .expect(401).expect({error:'Missing bearer token'})
+            })
+            it(`Returns 401 Unauthorized access when the wrong header is presented`,()=>{
+                return supertest(app)
+                    .delete(`/api/services/1`)
+                    .set('Authorization', 'bearer thisisWrong')
+                    .expect(401).expect({error:'Unauthorized request'})
+            })
+        })
         context(`Delete existing data`,()=>{
             beforeEach('add data',()=>{
                 return db.into('flp_services').insert(fixture.services)
@@ -209,11 +285,13 @@ describe('clients', ()=>{
                 const serviceId = 1
                 return supertest(app)
                     .delete(`/api/services/${serviceId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(204)
                     .then(res=>{
                         //check data is no longer there
                         return supertest(app)
                             .get(`/api/services/${serviceId}`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(404)
                     })
             })
@@ -221,6 +299,7 @@ describe('clients', ()=>{
                 const serviceId = 200
                 return supertest(app)
                     .delete(`/api/services/${serviceId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .expect(404)
                     .expect({error:`Could not locate service with id - ${serviceId}`})
             })
@@ -240,6 +319,25 @@ describe('clients', ()=>{
         beforeEach('place clients needed as foreign key',()=>{
             return db.into('flp_clients').insert(fixture.clients)
         })
+        context(`PATCH /:Id -without good authorization header`,()=>{
+            beforeEach('add data',()=>{
+                return db.into('flp_services').insert(fixture.services)
+            })
+            afterEach('clean data',()=>{
+                return db.raw('truncate flp_services restart identity cascade')
+            })
+            it(`Returns 401 Missing bearer token when auth not provided`,()=>{
+                return supertest(app)
+                    .patch('/api/services/1')
+                    .expect(401).expect({error:'Missing bearer token'})
+            })
+            it(`Returns 401 Unauthorized access when the wrong header is presented`,()=>{
+                return supertest(app)
+                    .patch(`/api/services/1`)
+                    .set('Authorization', 'bearer thisisWrong')
+                    .expect(401).expect({error:'Unauthorized request'})
+            })
+        })
         context(`Service does not exist`,()=>{
             it(`Returns 400 when service does not exist`,()=>{
                 const serviceId = 50
@@ -248,6 +346,7 @@ describe('clients', ()=>{
                 updateService.notes=newItem
                 return supertest(app)
                     .patch(`/api/services/${serviceId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({notes:newItem})
                     .expect(404)
                     .expect({error:`Could not locate service with id - ${serviceId}`})
@@ -267,12 +366,14 @@ describe('clients', ()=>{
                 updateService.notes=newItem
                 return supertest(app)
                     .patch(`/api/services/${serviceId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({notes:newItem})
                     .expect(200)
                     .expect(updateService)
                     .then(res=>{
                         return supertest(app)
                             .get(`/api/services/`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(200)
                             .expect([updateService])
                     })
@@ -284,12 +385,14 @@ describe('clients', ()=>{
                 updateService.cost=newItem
                 return supertest(app)
                     .patch(`/api/services/${serviceId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({cost:newItem})
                     .expect(200)
                     .expect(updateService)
                     .then(res=>{
                         return supertest(app)
                             .get(`/api/services/`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(200)
                             .expect([updateService])
                     })
@@ -302,12 +405,14 @@ describe('clients', ()=>{
                 updateService.people=newItem
                 return supertest(app)
                     .patch(`/api/services/${serviceId}`)
+                    .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                     .send({people:newItem})
                     .expect(200)
                     .expect(updateService)
                     .then(res=>{
                         return supertest(app)
                             .get(`/api/services/`)
+                            .set('Authorization', makeAuthHeader(fixture.userNoCreds))
                             .expect(200)
                             .expect([updateService])
                     })

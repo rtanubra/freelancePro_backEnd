@@ -6,7 +6,7 @@ const jsonBodyParser = express.json()
 const xss = require('xss')
 
 const ValidateHelper = require('../helpers/validation')
-
+const {phoneCreate} = require('../helpers/phone')
 const UserService = require('../user/user-service')
 
 //protected endpoints 
@@ -44,8 +44,9 @@ clientsRouter
         if (!phone){
             return res.status(400).json({error:"Phone is required"})
         }
-
+        
         valid = ValidateHelper.phoneCheck(phone)
+        phone = phoneCreate(phone)
         if(!valid[0]){
             return res.status(400).json({error:`Client phone: ${valid[1]}`})
         }
@@ -66,7 +67,7 @@ clientsRouter
                 return client.email === email
             })
             const samePhone = clients.find(client=>{
-                return client.phone === phone
+                return client.phone === phoneCreate(phone)
             })
             if (sameEmail){
                 return res.status(400).json({error:`A client with email - ${email} - already exists`})

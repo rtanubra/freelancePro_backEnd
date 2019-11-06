@@ -16,6 +16,22 @@ promosRouter
             return res.status(200).json(promos)
         })
     })
+    .patch(jsonBodyParser,(req,res,next)=>{
+        const db = req.app.get('db')
+        const {clients, promo_id} = req.body
+        const newUpdate = {clients,promo_id}
+        const required = ["clients","promo_id"]
+        for (i in required){
+            if(!newUpdate[required[i]]){
+                return res.status(400).json({error:`Missing required field - ${required[i]}`})
+            }
+        } 
+        const myStr =PromosService.rawString(clients,promo_id)
+        PromosService.updateMass(db,myStr).then(()=>{
+            return res.status(204).end()
+        })
+  
+    })
     .post(jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
         const {name, description, date_created, date_ending} = req.body

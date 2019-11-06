@@ -15,6 +15,16 @@ const PromosService ={
     },
     updatePromo(db,id,updatePromo){
         return db('flp_promos').where({id}).update(updatePromo).returning('*')
+    },
+    rawString(clients,promoId){
+        let clientStream = ""
+        clients.forEach(client=>{
+            clientStream= clientStream + `'${client}',`
+        })
+        return `Update flp_clients SET open_promo = ${promoId}  WHERE id IN (${clientStream.substring(0,clientStream.length-1)})`
+    },
+    updateMass(db,myStr){
+        return db.raw(myStr)
     }
 
 }

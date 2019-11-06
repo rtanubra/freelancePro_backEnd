@@ -11,7 +11,7 @@ CREATE TABLE flp_services (
   notes TEXT NOT NULL,
   cost FLOAT(8) NOT NULL,
   people INTEGER NOT NULL,
-  promo_id INTEGER REFERENCES flp_promos(id) ON DELETE CASCADE,
+  promo_id INTEGER REFERENCES flp_promos(id) ON DELETE SET NULL,
   client_id INTEGER REFERENCES flp_clients(id) ON DELETE CASCADE NOT NULL
 );
 

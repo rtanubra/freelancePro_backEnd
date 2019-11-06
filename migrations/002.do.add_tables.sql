@@ -16,5 +16,5 @@ CREATE TABLE flp_services (
 );
 
 ALTER TABLE flp_clients 
-  ADD open_promo INTEGER REFERENCES flp_promos(id) ON DELETE CASCADE;
+  ADD open_promo INTEGER REFERENCES flp_promos(id) ON DELETE SET NULL;
 

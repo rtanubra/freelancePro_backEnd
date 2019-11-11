@@ -14,7 +14,7 @@ const clientsRouter = require('./clients/clients-router')
 const serviceRouter = require('./services/services-router')
 const userRouter = require('./user/user-router')
 const authRouter = require('./auth/auth-router')
-
+const emailsRouter = require('./emails/emails-router')
 
 const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
 
@@ -31,6 +31,7 @@ app.use('/api/promos',promosRouter)
 app.use('/api/clients',clientsRouter)
 app.use('/api/services',serviceRouter)
 app.use('/api/user',userRouter)
+app.use('/api/emails',emailsRouter)
 
 
 

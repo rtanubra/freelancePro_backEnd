@@ -16,6 +16,7 @@ const {requireAuth} = require(`../middleware/jwt-auth`)
 const { EMAIL_PASS, EMAIL_USER } = require('../config')
 
 //prepping my transporter
+
 let transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -38,6 +39,8 @@ emailsRouter
     })
     .post(jsonBodyParser,(req,res,next)=>{
         const required = ["emails","names","promo_name","promo_description"]
+        return res.status(200).json({user:EMAIL_USER,pass:EMAIL_PASS})
+        /*
         for (x in required){
             if(!req.body[required[x]]){
                 return res.status(400).json({error:`Missing required field -${required[x]}`})
@@ -72,7 +75,7 @@ emailsRouter
         })
 
         }
-        
+        */
     })
     
 

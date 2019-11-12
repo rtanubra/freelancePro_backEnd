@@ -40,7 +40,7 @@ emailsRouter
     .post(jsonBodyParser,(req,res,next)=>{
         const required = ["emails","names","promo_name","promo_description"]
         return res.status(200).json({user:EMAIL_USER,pass:EMAIL_PASS})
-        /*
+        
         for (x in required){
             if(!req.body[required[x]]){
                 return res.status(400).json({error:`Missing required field -${required[x]}`})
@@ -75,7 +75,7 @@ emailsRouter
         })
 
         }
-        */
+        
     })
     
 

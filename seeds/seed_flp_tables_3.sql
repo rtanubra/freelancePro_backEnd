@@ -24,12 +24,13 @@ VALUES
   ('Madara Dewi','madaradewi@gmail.com','555-123-1234',1,2),
   ('Symbolic Cindy','symboliccindy@gmail.com','123-123-5555',1,3);
 
-INSERT INTO flp_services (notes,cost,people, promo_id,client_id)
+INSERT INTO flp_services (notes,cost,people, promo_id,client_id, service_date )
 VALUES
-  ('Hair and Makeup',60,3,1,1),
-  ('Hair Wedding',420,3,2,2),
-  ('Hair and Makeup Wedding',145,6,3,3),
-  ('Hair and Makeup Wedding',165,7,3,3);
+  ('Hair and Makeup',60,3,1,1,'2019-10-20'),
+  ('Hair Wedding',321,3,2,2,'2019-08-20'),
+  ('Hair and Makeup Wedding',145,6,3,3,'2019-11-20'),
+  ('Hair and Makeup Wedding',165,7,3,3,'2019-09-20');
+  ('Hair and Makeup Wedding',86,1,3,3,'2019-08-20');
 
 
 

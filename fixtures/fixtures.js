@@ -24,9 +24,9 @@ services=[
     {notes:"Hair",cost:400,people:2,promo_id:2,client_id:2}
 ]
 services_answer=[
-    {client_id:1,cost:600,id:1,notes:"Hair and Makeup",people:3,promo_id:1},
-    {client_id:1,cost:200,id:2,notes:"Moustache",people:1,promo_id:1},
-    {client_id:2,cost:400,id:3,notes:"Hair",people:2,promo_id:2}
+    {client_id:1,cost:600,id:1,notes:"Hair and Makeup",people:3,promo_id:1, service_date:"2019-10-20T04:00:00.000Z"},
+    {client_id:1,cost:200,id:2,notes:"Moustache",people:1,promo_id:1, service_date:"2019-10-20T04:00:00.000Z"},
+    {client_id:2,cost:400,id:3,notes:"Hair",people:2,promo_id:2,service_date:"2019-10-20T04:00:00.000Z"}
 ]
 userNoCreds = {
     email:'rdtanubrata@fmail.com',

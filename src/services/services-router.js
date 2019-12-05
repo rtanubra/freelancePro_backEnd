@@ -11,9 +11,14 @@ const {requireAuth} = require(`../middleware/jwt-auth`)
 serviceRouter
     .route('/')
     .all(requireAuth)
-    .get((req,res,next)=>{
+    .get(jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
-        return ServiceService.getAllServices(db).then(services=>{
+        let {user_id}= req.body
+        if (!user_id){
+            user_id = 1
+        }
+        console.log(user_id)
+        return ServiceService.getUserServices(db,user_id).then(services=>{
             return res.status(200).json(services)
         })
     })

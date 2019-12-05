@@ -8,6 +8,9 @@ const ClientsService ={
         return db.insert(newClient).into('flp_clients').returning('*')
 
     },
+    getUserClients(db,user_id){
+        return db.select('*').from('flp_clients').where({user_id}).orderBy('id','desc')
+    },
     getClientByEmail(db,email){
         return db.select('*').from('flp_clients').where({email}).first()
     },

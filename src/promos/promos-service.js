@@ -4,6 +4,9 @@ const PromosService ={
     getAllPromos(db){
         return db.select('*').from('flp_promos').orderBy('id')
     },
+    getUserPromos(db,user_id){
+        return db.select('*').from('flp_promos').where({user_id}).orderBy('id','desc')
+    },
     getById(db,id){
         return db.select('*').from('flp_promos').where({id}).first()
     },

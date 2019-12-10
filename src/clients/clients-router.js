@@ -17,7 +17,11 @@ clientsRouter
     .all(requireAuth)
     .get((req,res,next)=>{
         const db = req.app.get('db')
-        return ClientsService.getAllClients(db).then(clients=>{
+        let {user_id} = req.headers 
+        if (!user_id){
+            user_id = 1
+        }
+        return ClientsService.getUserClients(db,user_id).then(clients=>{
             return res.status(200).json(clients)
         })
     })

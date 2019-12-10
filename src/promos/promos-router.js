@@ -12,7 +12,12 @@ promosRouter
     .all(requireAuth)
     .get((req,res,next)=>{
         const db = req.app.get('db')
-        PromosService.getAllPromos(db).then((promos)=>{
+        let {user_id} = req.headers
+
+        if(!user_id){
+            user_id=1
+        }
+        PromosService.getUserPromos(db,user_id).then((promos)=>{
             return res.status(200).json(promos)
         })
     })

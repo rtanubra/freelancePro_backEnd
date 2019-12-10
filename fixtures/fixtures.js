@@ -10,23 +10,23 @@ user=[
     {email:"rdtanubrata@gmail.com",password:"test1"}
 ]
 promos=[
-    {name:"10-Spring2019",description:"Give 10% off to select clients,Started October 2019",date_created: "2019-10-20T04:00:00.000Z",date_ending: "2021-10-20T04:00:00.000Z"},
-    {name:"5-Spring2019",description:"Give 5% off to all clients.",date_created: "2019-10-20T04:00:00.000Z",date_ending: "2021-10-20T04:00:00.000Z"}
+    {name:"10-Spring2019",description:"Give 10% off to select clients,Started October 2019",date_created: "2019-10-20T04:00:00.000Z",date_ending: "2021-10-20T04:00:00.000Z",user_id:1},
+    {name:"5-Spring2019",description:"Give 5% off to all clients.",date_created: "2019-10-20T04:00:00.000Z",date_ending: "2021-10-20T04:00:00.000Z",user_id:1}
 
 ]
 promos_answer = [
-    {id:1,name:"10-Spring2019",description:"Give 10% off to select clients,Started October 2019",date_created: "2019-10-20T04:00:00.000Z",date_ending: "2021-10-20T04:00:00.000Z"},
-    {id:2,name:"5-Spring2019",description:"Give 5% off to all clients.",date_created: "2019-10-20T04:00:00.000Z",date_ending: "2021-10-20T04:00:00.000Z"} 
+    {id:1,name:"10-Spring2019",description:"Give 10% off to select clients,Started October 2019",date_created: "2019-10-20T04:00:00.000Z",date_ending: "2021-10-20T04:00:00.000Z",user_id:1},
+    {id:2,name:"5-Spring2019",description:"Give 5% off to all clients.",date_created: "2019-10-20T04:00:00.000Z",date_ending: "2021-10-20T04:00:00.000Z",user_id:1} 
 ]
 services=[
-    {notes:"Hair and Makeup",cost:600,people:3,promo_id:1,client_id:1},
-    {notes:"Moustache",cost:200,people:1,promo_id:1,client_id:1},
-    {notes:"Hair",cost:400,people:2,promo_id:2,client_id:2}
+    {notes:"Hair and Makeup",cost:600,people:3,promo_id:1,client_id:1,user_id:1},
+    {notes:"Moustache",cost:200,people:1,promo_id:1,client_id:1,user_id:1},
+    {notes:"Hair",cost:400,people:2,promo_id:2,client_id:2,user_id:1}
 ]
 services_answer=[
-    {client_id:1,cost:600,id:1,notes:"Hair and Makeup",people:3,promo_id:1, service_date:"2019-10-20T04:00:00.000Z"},
-    {client_id:1,cost:200,id:2,notes:"Moustache",people:1,promo_id:1, service_date:"2019-10-20T04:00:00.000Z"},
-    {client_id:2,cost:400,id:3,notes:"Hair",people:2,promo_id:2,service_date:"2019-10-20T04:00:00.000Z"}
+    {client_id:1,cost:600,id:1,notes:"Hair and Makeup",people:3,promo_id:1, service_date:"2019-10-20T04:00:00.000Z",user_id:1},
+    {client_id:1,cost:200,id:2,notes:"Moustache",people:1,promo_id:1, service_date:"2019-10-20T04:00:00.000Z",user_id:1},
+    {client_id:2,cost:400,id:3,notes:"Hair",people:2,promo_id:2,service_date:"2019-10-20T04:00:00.000Z",user_id:1}
 ]
 userNoCreds = {
     email:'rdtanubrata@fmail.com',

@@ -4,6 +4,10 @@ const ServiceService = {
     getAllServices(db){
         return db.select('*').from('flp_services').orderBy('id')
     },
+    getUserServices(db,user_id){
+        return db.select('*').from('flp_services').where({user_id}).orderBy('id','desc')
+    }
+    ,
     getServiceById(db,id){
         return db.select('*').from('flp_services').where({id}).first()
     },

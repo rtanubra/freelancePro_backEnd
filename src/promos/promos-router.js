@@ -39,10 +39,10 @@ promosRouter
     })
     .post(jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
-        const {name, description, date_created, date_ending} = req.body
-        const newPromo = {name, description, date_created, date_ending}
+        const {name, description, date_created, date_ending,user_id} = req.body
+        const newPromo = {name, description, date_created, date_ending,user_id}
         //only name and description are required.
-       const required = ['name','description']
+       const required = ['name','description','user_id']
             for (i in required){
                 if(!newPromo[required[i]]){
                     return res.status(400).json({error:`Missing required field - ${required[i]}`})

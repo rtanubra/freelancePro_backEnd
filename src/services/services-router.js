@@ -24,8 +24,8 @@ serviceRouter
     })
     .post(jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
-        const {notes,cost,people,promo_id,client_id} = req.body
-        const newService = {notes,cost,people,promo_id,client_id}
+        const {notes,cost,people,promo_id,client_id,user_id} = req.body
+        const newService = {notes,cost,people,promo_id,client_id,user_id}
         
         if (req.body.service_date){
             newService.service_date = req.body.service_date

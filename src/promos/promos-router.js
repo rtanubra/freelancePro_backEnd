@@ -10,9 +10,10 @@ const {requireAuth} = require(`../middleware/jwt-auth`)
 promosRouter
     .route('/')
     .all(requireAuth)
-    .get(jsonBodyParser,(req,res,next)=>{
+    .get((req,res,next)=>{
         const db = req.app.get('db')
-        let {user_id} = req.body
+        let {user_id} = req.headers
+
         if(!user_id){
             user_id=1
         }

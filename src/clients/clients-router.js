@@ -27,7 +27,7 @@ clientsRouter
     })
     .post(jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
-        let {name, email, phone, user_id,open_promo} = req.body
+        let {name, email, phone, user_id,open_promo,more_notes,adress} = req.body
         email = email.toLowerCase()
         if (!name){
             return res.status(400).json({error:"Name is required"})
@@ -62,6 +62,13 @@ clientsRouter
 
         //Should we use a promo.
         const client = {name, email, phone, user_id}
+        
+        if (more_notes){
+            client.more_notes = more_notes
+        }
+        if (adress) { 
+            client.adress =adress
+        }
         if (open_promo){
             client.open_promo = req.body.open_promo
         }
@@ -118,8 +125,8 @@ clientsRouter
         .patch((req,res,next)=>{
             const db = req.app.get('db')
             const id = res.client.id
-            const {name, email, phone, user_id,open_promo} = req.body
-            const newClient ={name, email, phone, user_id,open_promo}
+            const {name, email, phone, user_id,open_promo, more_notes,adress} = req.body
+            const newClient ={name, email, phone, user_id,open_promo, more_notes,adress}
             return ClientsService.getAllClients(db).then(clients=>{
                 let valid
                 let dupeCheck

@@ -10,7 +10,7 @@ TRUNCATE
 INSERT INTO flp_user (email,password) 
 VALUES
     ('testemail@gmail.com','$2a$10$hwtWWd1Uk5EDBpAVV3FRN.Xqmos6FO4WAk5rV8U8RYTOSw46GadVq'),
-    ('mushtary@gmail.com','$2a$10$gP9WCgfowSn6ooNa9BEzBeVk9PthOwdgC3dKl4JdVYfDgRFsxmwyW');
+    ('rdtanubrata@gmail.com','$2b$12$aB/Q1Sl/0I1tQTBbe3FeYOrzFkZfn3moR3UKzcaCOTqcDaK0ZIIpm');
 
 INSERT INTO flp_promos (name,description)
 VALUES

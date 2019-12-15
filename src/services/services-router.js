@@ -24,8 +24,8 @@ serviceRouter
     })
     .post(jsonBodyParser,(req,res,next)=>{
         const db = req.app.get('db')
-        const {notes,cost,people,promo_id,client_id,user_id} = req.body
-        const newService = {notes,cost,people,promo_id,client_id,user_id}
+        const {notes,cost,people,promo_id,client_id,user_id,more_notes} = req.body
+        const newService = {notes,cost,people,promo_id,client_id,user_id,more_notes}
         
         if (req.body.service_date){
             newService.service_date = req.body.service_date
@@ -88,8 +88,8 @@ serviceRouter
     .patch((req,res,next)=>{
         const db = req.app.get('db')
         const id = res.service.id
-        const {notes,cost,people,promo_id,client_id,service_date} = req.body
-        const optional = ['notes','cost','people','client_id']
+        const {notes,cost,people,promo_id,client_id,service_date,more_notes} = req.body
+        const optional = ['notes','cost','people','client_id','more_notes']
         //need to validate client exists.
         return ClientService.getAllClients(db).then(clients=>{
             if (client_id){
@@ -100,7 +100,7 @@ serviceRouter
                     return res.status(404).json({error:`Could not locate client with ID - ${client_id}`})
                 }
             }
-            return ServiceService.updateById(db,id,{notes,cost,people,promo_id,client_id,service_date}).then(service=>{
+            return ServiceService.updateById(db,id,{notes,cost,people,promo_id,client_id,service_date,more_notes}).then(service=>{
                 return res.status(200).json(service[0])
             })
             

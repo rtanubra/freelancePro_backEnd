@@ -94,7 +94,7 @@ serviceRouter
         return ClientService.getAllClients(db).then(clients=>{
             if (client_id){
                 const client = clients.find(cl=>{
-                    return cl.id === client_id
+                        return cl.id === client_id
                 })
                 if (!client){
                     return res.status(404).json({error:`Could not locate client with ID - ${client_id}`})

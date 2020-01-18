@@ -33,7 +33,7 @@ serviceRouter
 
         return ClientService.getAllClients(db).then(clients=>{
             //validate everything is there
-            const required = ['notes','cost','people','client_id']
+            const required = ['notes','cost','people','client_id','user_id']
             for (i in required){
                 if(!newService[required[i]]){
                     return res.status(400).json({error:`Missing required field - ${required[i]}`})
